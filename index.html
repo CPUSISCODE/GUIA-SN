@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Consulta NCM · Simples Nacional · Acre</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.mini.min.js"></script>
+<script src="farol-supabase.js"></script>
 <style>
   :root{
     --ink:#182437;
@@ -549,7 +550,7 @@ function findByNcm(digits){
 }
 
 // ---------- Constantes de cálculo (Acre + Simples Nacional) ----------
-const REGIONS = {
+let REGIONS = {
   'AC':{name:'Acre', group:'norte'},
   'AL':{name:'Alagoas', group:'nordeste'},
   'AP':{name:'Amapá', group:'norte'},
@@ -580,18 +581,27 @@ const REGIONS = {
   'EXT':{name:'Exterior (importado)', group:'exterior'},
 };
 
-const ALIQ_INTERNA_AC = 19;
+let ALIQ_INTERNA_AC = 19;
 
 // alíquota interestadual + % antecipação conforme região de origem (destino: Acre)
+// Valores idênticos aos que estavam embutidos na função; passam a ficar em uma
+// tabela para que a sincronização com o Supabase possa atualizá-los.
+let GRUPOS_ORIGEM = {
+  'exterior':     {inter:4,  antecip:17},
+  'sul-sudeste':  {inter:7,  antecip:14},
+  'norte':        {inter:12, antecip:9},
+  'nordeste':     {inter:12, antecip:9},
+  'centro-oeste': {inter:12, antecip:9},
+  'sudeste-es':   {inter:12, antecip:9},
+};
 function interRates(group){
-  if(group === 'exterior') return {inter:4, antecip:17};
-  if(group === 'sul-sudeste') return {inter:7, antecip:14};
-  // norte, nordeste, centro-oeste, sudeste-es
-  return {inter:12, antecip:9};
+  const g = GRUPOS_ORIGEM[group];
+  // grupo desconhecido cai no mesmo padrão de antes: 12% / 9%
+  return g ? {inter:g.inter, antecip:g.antecip} : {inter:12, antecip:9};
 }
 
 // Simples Nacional — Anexo I (Comércio), LC 123/2006
-const FAIXAS_ANEXO_I = [
+let FAIXAS_ANEXO_I = [
   {max: 180000,   aliq: 4.00,  pd: 0,        cofins: 12.74, pis: 2.76, icms: 34.00},
   {max: 360000,   aliq: 7.30,  pd: 5940,     cofins: 12.74, pis: 2.76, icms: 34.00},
   {max: 720000,   aliq: 9.50,  pd: 13860,    cofins: 12.74, pis: 2.76, icms: 33.50},
@@ -918,8 +928,8 @@ function updateOutcomes(){
 // CSOSN 400 (Simples) / CST 41 (regime normal). Itens marcados interna:true
 // só valem para produção interna do Acre (fora do estado, seguem regra normal).
 // ============================================================
-const ALIQ_CESTA_AC = 17;
-const CESTA_AC = [
+let ALIQ_CESTA_AC = 17;
+let CESTA_AC = [
   {pref:'1006', nome:'Arroz', interna:false},
   {pref:'07133', nome:'Feijão', interna:false},
   {pref:'0201', nome:'Carne bovina', interna:true},
@@ -982,7 +992,7 @@ function qualifyCestaAC(ncm8, origemAC){
 // Fonte: Tabela de Classificação Tributária IT 2025.002 (Portal Conformidade Fácil/SVRS)
 // + Anexos I, VII, VIII, XIV, XV da LC 214/2025
 // ============================================================
-const RT_RULES = [
+let RT_RULES = [
   // Cesta básica nacional (Anexo I — alíquota zero) → 200003
   {pref:['1006','0401','0402','190110','040510','151710','07133','0901','110620','1903','1101','1102','170114','170199','19021','100590','110412','0201','0202','0203','0204','0206','0207','0209','0210','0302','0303','0304','0406','2501','0903'],
    cst:'200', ct:'200003', label:'Cesta básica — alíquota zero (Anexo I, LC 214/2025)',
@@ -1870,7 +1880,19 @@ document.getElementById('xmlPdfBtn').addEventListener('click', function(){
   openReportWindow(generateSNReport());
 });
 
-document.getElementById('liveStatus').textContent = 'Base embutida: ' + dbList.length.toLocaleString('pt-BR') + ' NCMs · ST/AC: ' + dbList.filter(r=>r.seg).length.toLocaleString('pt-BR') + ' · Monofásicos: ' + dbList.filter(r=>r.mono).length.toLocaleString('pt-BR');
+// Resumo da base em uso. O elemento #liveStatus existe no guia do Simples
+// Nacional e não no do Lucro Presumido — sem a checagem de nulo, a linha
+// lançava exceção e interrompia todo o restante do script (era o que
+// deixava a aba "Auditoria de Cadastro" sem resposta no GUIA-LP).
+function atualizarResumoBase(){
+  const el = document.getElementById('liveStatus');
+  if(!el) return;
+  const origem = (window.FarolDB && window.FarolDB.origem === 'supabase') ? 'Base Supabase' : 'Base embutida';
+  el.textContent = origem + ': ' + dbList.length.toLocaleString('pt-BR') +
+    ' NCMs · ST/AC: ' + dbList.filter(r=>r.seg).length.toLocaleString('pt-BR') +
+    ' · Monofásicos: ' + dbList.filter(r=>r.mono).length.toLocaleString('pt-BR');
+}
+atualizarResumoBase();
 
 // ---------- auditRegimeInfo: SIMPLES NACIONAL ----------
 function auditRegimeInfo(rec, cesta){
@@ -2436,6 +2458,85 @@ document.getElementById('auditTemplateBtn').addEventListener('click', function(e
   a.click();
 });
 
+// ============================================================
+// SINCRONIZAÇÃO COM O SUPABASE — base fiscal unificada
+// ------------------------------------------------------------
+// GUIA-SN e GUIA-LP leem a MESMA base de NCM e os MESMOS
+// parâmetros do RICMS/AC no projeto FAROL-GUIA do Supabase.
+// O que muda entre os dois é apenas o motor de cálculo do
+// regime tributário.
+//
+// A base embutida acima continua sendo o ponto de partida: a
+// ferramenta abre e funciona sem internet, exatamente como
+// antes. A base do Supabase só toma o lugar dela depois de
+// passar pela validação de farol-supabase.js — se a validação
+// reprovar, ou se não houver rede, a base embutida permanece.
+// ============================================================
+
+// Remonta dbByCode/dbList a partir do bundle. É o mesmo
+// desempacotamento do bloco embutido, campo a campo.
+function aplicarBaseNcm(bundle){
+  const porCodigo = {};
+  const lista = [];
+  bundle.rows.forEach(function(r){
+    const p = r.split('|');
+    const rec = {
+      ncm: p[0],
+      desc: p[1],
+      seg: p[2] !== '' ? bundle.segs[parseInt(p[2])] : null,
+      mva: p[3] !== '' ? parseFloat(p[3]) : null,
+      mono: p[4] !== '' ? bundle.monos[parseInt(p[4])] : null,
+    };
+    porCodigo[rec.ncm] = rec;
+    lista.push(rec);
+  });
+  dbByCode = porCodigo;
+  dbList = lista;
+}
+
+// Substitui os parâmetros fiscais pelos do Supabase. Cada bloco só
+// é trocado se vier completo; o que faltar continua com o valor
+// embutido.
+function aplicarParametrosFiscais(f){
+  if(f.cesta && f.cesta.length) CESTA_AC = f.cesta;
+  if(f.rt && f.rt.length) RT_RULES = f.rt;
+  if(f.regions && f.regions.AC) REGIONS = f.regions;
+  if(f.grupos && f.grupos['sul-sudeste']) GRUPOS_ORIGEM = f.grupos;
+  if(f.params){
+    if(typeof f.params.ALIQ_INTERNA_AC === 'number') ALIQ_INTERNA_AC = f.params.ALIQ_INTERNA_AC;
+    if(typeof f.params.ALIQ_CESTA_AC === 'number') ALIQ_CESTA_AC = f.params.ALIQ_CESTA_AC;
+  }
+  // O Anexo I tem 6 faixas; só aceita a tabela inteira.
+  if(f.faixasSN && f.faixasSN.length === 6) FAIXAS_ANEXO_I = f.faixasSN;
+}
+
+// Depois de trocar a base, tudo que já está na tela é refeito com
+// os dados novos — nada fica exibindo cálculo de base antiga.
+function redesenharComBaseNova(){
+  if(currentRecord){
+    const atualizado = findByNcm(currentRecord.ncm);
+    if(atualizado){ currentRecord = atualizado; renderResult(); }
+  }
+  if(xmlItemsState.length){
+    // o ICMS de entrada depende do segmento de ST, então é recalculado
+    xmlItemsState.forEach(function(row){
+      row.entrada = computeIcmsEntradaXml(row.raw, row.emitUF, row.emitCRT);
+    });
+    renderXmlTable();
+  }
+  atualizarResumoBase();
+  if(auditItems.length){
+    auditItems = auditItems.map(function(it){ return auditRunItem(it.original); });
+    auditRender();
+  }
+}
+
+if(window.FarolDB){
+  window.FarolDB.aplicarNcm    = aplicarBaseNcm;
+  window.FarolDB.aplicarFiscal = aplicarParametrosFiscais;
+  window.FarolDB.aoAtualizar   = redesenharComBaseNova;
+  window.FarolDB.sincronizar();
+}
 </script>
 </body>
 </html>
