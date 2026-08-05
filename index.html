@@ -252,9 +252,167 @@
   #auditItemsBody .badge-mini.audit-err{background:#fbe1de; color:#a03a2c;}
   #auditItemsBody td.diff{background:#fff8e1;}
   #auditItemsBody td.diff::after{content:' ✎'; color:#c48b1a; font-weight:bold;}
+
+  /* ---------- Controle de acesso ---------- */
+  [hidden]{display:none !important;}
+
+  .auth-gate{
+    position:fixed; inset:0; z-index:9000; overflow-y:auto;
+    background:var(--ink);
+    background-image:
+      radial-gradient(circle at 15% -10%, rgba(169,122,47,.28), transparent 55%),
+      radial-gradient(circle at 90% 110%, rgba(63,102,80,.25), transparent 55%);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:40px 20px;
+  }
+  .auth-card{
+    width:100%; max-width:430px; margin:auto;
+    background:var(--paper-raised); border:1px solid var(--line);
+    border-top:4px solid var(--gold); border-radius:4px;
+    box-shadow:0 18px 48px rgba(0,0,0,.35);
+    padding:26px 26px 22px;
+  }
+  .auth-brand{margin-bottom:20px;}
+  .auth-brand .eyebrow{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold); margin-bottom:6px;
+  }
+  .auth-brand h1{font-family:var(--serif); font-size:22px; font-weight:700; margin:0 0 6px; line-height:1.25;}
+  .auth-brand p{margin:0; font-size:12.5px; color:var(--ink-soft);}
+
+  .auth-tabs{display:flex; gap:0; border-bottom:1px solid var(--line); margin-bottom:18px;}
+  .auth-tabs button{
+    flex:1; background:transparent; color:var(--ink-soft); border:none;
+    border-bottom:2px solid transparent; border-radius:0;
+    font-size:13.5px; font-weight:600; padding:10px 8px;
+  }
+  .auth-tabs button:hover{background:#f0ede4; color:var(--ink);}
+  .auth-tabs button.active{color:var(--ink); border-bottom-color:var(--gold); background:transparent;}
+
+  .auth-field{margin-bottom:13px;}
+  .auth-field label{display:block; font-size:12px; color:var(--ink-soft); margin-bottom:4px; font-weight:600;}
+  .auth-field .opcional{font-weight:400; color:#8a8578;}
+  .auth-field input{
+    width:100%; font-family:var(--sans); font-size:14px; padding:10px 11px;
+    border:1px solid var(--line); border-radius:3px; background:#fdfcf9; color:var(--ink);
+  }
+  .auth-field input:focus{outline:2px solid var(--gold); outline-offset:1px; border-color:var(--gold);}
+  .auth-field .dica{font-size:11.5px; color:var(--ink-soft); margin-top:4px;}
+
+  .auth-submit{width:100%; padding:12px; font-size:14px; margin-top:4px;}
+  .auth-submit[disabled]{opacity:.6; cursor:progress;}
+  .auth-link{
+    display:block; width:100%; margin-top:12px; padding:6px; background:transparent;
+    border:none; color:var(--ink-soft); font-size:12.5px; font-weight:500;
+    text-decoration:underline; text-underline-offset:2px;
+  }
+  .auth-link:hover{background:transparent; color:var(--gold);}
+
+  .auth-msg{
+    padding:11px 13px; border-radius:3px; font-size:12.5px; margin-bottom:16px;
+    border:1px solid; line-height:1.45;
+  }
+  .auth-msg.erro{background:var(--red-soft); border-color:#d9b6ab; color:var(--red);}
+  .auth-msg.ok{background:var(--green-soft); border-color:#b9d0c0; color:var(--green);}
+  .auth-msg.info{background:var(--gold-soft); border-color:#d8bd85; color:#5c3f14;}
+
+  .auth-carregando{
+    text-align:center; padding:14px 0 4px; font-family:var(--mono);
+    font-size:12px; letter-spacing:.06em; color:var(--ink-soft);
+  }
+
+  .user-bar{
+    background:#0f1926; color:#c7cedb;
+    border-bottom:1px solid rgba(255,255,255,.09);
+    font-size:12.5px;
+  }
+  .user-bar .wrap{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding-top:8px; padding-bottom:8px; flex-wrap:wrap;
+  }
+  .user-bar .quem{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; min-width:0;}
+  .user-bar .nome{color:var(--paper); font-weight:600;}
+  .user-bar .email{font-family:var(--mono); font-size:11.5px; opacity:.75; overflow-wrap:anywhere;}
+  .user-bar button{
+    background:transparent; border:1px solid rgba(255,255,255,.28); color:#dfe4ec;
+    padding:5px 12px; font-size:12px; flex:none;
+  }
+  .user-bar button:hover{background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.5);}
 </style>
 </head>
 <body>
+
+<!-- ---------- Tela de acesso (cobre a página enquanto não houver sessão) ---------- -->
+<div id="authGate" class="auth-gate">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="eyebrow">CPUSIS · Módulo Fiscal · Simples Nacional</div>
+      <h1>Consulta NCM — Simples Nacional (Acre)</h1>
+      <p>Ferramenta de uso restrito. Entre com sua conta para continuar.</p>
+    </div>
+
+    <div id="authCarregando" class="auth-carregando">Verificando acesso…</div>
+
+    <div id="authConteudo" hidden>
+      <div class="auth-tabs">
+        <button type="button" id="authTabEntrar" class="active">Entrar</button>
+        <button type="button" id="authTabCriar">Criar conta</button>
+      </div>
+
+      <div id="authMsg" class="auth-msg" role="status" hidden></div>
+
+      <form id="authFormEntrar" novalidate>
+        <div class="auth-field">
+          <label for="entrarEmail">E-mail</label>
+          <input type="email" id="entrarEmail" autocomplete="email" placeholder="voce@empresa.com.br">
+        </div>
+        <div class="auth-field">
+          <label for="entrarSenha">Senha</label>
+          <input type="password" id="entrarSenha" autocomplete="current-password" placeholder="Sua senha">
+        </div>
+        <button type="submit" id="entrarBtn" class="auth-submit">Entrar</button>
+        <button type="button" id="esqueciSenhaBtn" class="auth-link">Esqueci minha senha</button>
+      </form>
+
+      <form id="authFormCriar" novalidate hidden>
+        <div class="auth-field">
+          <label for="criarNome">Nome</label>
+          <input type="text" id="criarNome" autocomplete="name" placeholder="Seu nome completo">
+        </div>
+        <div class="auth-field">
+          <label for="criarEmpresa">Empresa <span class="opcional">(opcional)</span></label>
+          <input type="text" id="criarEmpresa" autocomplete="organization" placeholder="Razão social ou nome fantasia">
+        </div>
+        <div class="auth-field">
+          <label for="criarEmail">E-mail</label>
+          <input type="email" id="criarEmail" autocomplete="email" placeholder="voce@empresa.com.br">
+        </div>
+        <div class="auth-field">
+          <label for="criarSenha">Senha</label>
+          <input type="password" id="criarSenha" autocomplete="new-password" placeholder="Mínimo de 8 caracteres">
+          <div class="dica">Use pelo menos 8 caracteres.</div>
+        </div>
+        <div class="auth-field">
+          <label for="criarSenha2">Confirmar senha</label>
+          <input type="password" id="criarSenha2" autocomplete="new-password" placeholder="Repita a senha">
+        </div>
+        <button type="submit" id="criarBtn" class="auth-submit">Criar conta</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="appRoot" hidden>
+
+<div id="userBar" class="user-bar">
+  <div class="wrap">
+    <div class="quem">
+      <span class="nome" id="userBarNome">—</span>
+      <span class="email" id="userBarEmail"></span>
+    </div>
+    <button type="button" id="sairBtn" class="small">Sair</button>
+  </div>
+</div>
 
 <div class="masthead">
   <div class="wrap">
@@ -505,6 +663,8 @@
 
   <div class="footer-note">Alíquota interna geral do Acre: 19% (Art. 17, I, RICMS/AC) · Ferramenta de apoio — validar com contador antes de aplicar em documentos fiscais.</div>
 </div>
+
+</div><!-- /appRoot -->
 
 <script>
 // ---------- Seed data ----------
@@ -2436,6 +2596,265 @@ document.getElementById('auditTemplateBtn').addEventListener('click', function(e
   a.click();
 });
 
+</script>
+
+<!-- ---------- Autenticação (Supabase) ---------- -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.1/dist/umd/supabase.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  // A chave abaixo é a chave PUBLICÁVEL do projeto — ela é feita para ficar
+  // exposta no navegador. Quem protege os dados é o RLS da tabela profiles.
+  // Nunca colocar a service_role aqui.
+  var SUPABASE_URL = 'https://axfyuiidgauhshmmywmp.supabase.co';
+  var SUPABASE_CHAVE_PUBLICAVEL = 'sb_publishable_OdxVRnLDINVvzFkHbYvO0Q_whqCr8pd';
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  var gate       = $('authGate');
+  var appRoot    = $('appRoot');
+  var carregando = $('authCarregando');
+  var conteudo   = $('authConteudo');
+  var msg        = $('authMsg');
+  var tabEntrar  = $('authTabEntrar');
+  var tabCriar   = $('authTabCriar');
+  var formEntrar = $('authFormEntrar');
+  var formCriar  = $('authFormCriar');
+  var btnEntrar  = $('entrarBtn');
+  var btnCriar   = $('criarBtn');
+  var btnSair    = $('sairBtn');
+  var barNome    = $('userBarNome');
+  var barEmail   = $('userBarEmail');
+
+  if(typeof window.supabase === 'undefined' || !window.supabase.createClient){
+    carregando.textContent = 'Não foi possível carregar o componente de acesso. Verifique sua conexão e recarregue a página.';
+    return;
+  }
+
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_CHAVE_PUBLICAVEL, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storageKey: 'guia-sn-auth'
+    }
+  });
+
+  // ---------- Tradução das mensagens do Supabase (que respondem em inglês) ----------
+  var TRADUCOES = [
+    [/invalid login credentials/i,            'E-mail ou senha incorretos.'],
+    [/email not confirmed/i,                  'Seu e-mail ainda não foi confirmado. Procure o link de confirmação na sua caixa de entrada (e no spam).'],
+    [/user already registered|already been registered/i, 'Já existe uma conta com esse e-mail. Use a aba "Entrar" ou redefina sua senha.'],
+    [/password should be at least (\d+)/i,    'A senha é curta demais. Use pelo menos 8 caracteres.'],
+    [/unable to validate email address|invalid format/i, 'E-mail inválido. Confira o endereço digitado.'],
+    [/signup(s)? (are |is )?(not allowed|disabled)/i, 'O cadastro de novas contas está desativado. Fale com o administrador.'],
+    [/email rate limit exceeded|over_email_send_rate_limit/i, 'Muitos e-mails enviados em pouco tempo. Aguarde alguns minutos e tente de novo.'],
+    [/for security purposes, you can only request this after (\d+) seconds?/i, 'Por segurança, aguarde alguns segundos antes de tentar novamente.'],
+    [/request rate limit reached|too many requests/i, 'Muitas tentativas seguidas. Aguarde um instante e tente novamente.'],
+    [/new password should be different/i,     'A nova senha precisa ser diferente da anterior.'],
+    [/user not found/i,                       'Não encontramos uma conta com esse e-mail.'],
+    [/email link is invalid or has expired|token has expired|otp_expired/i, 'O link expirou ou já foi usado. Peça um novo.'],
+    [/weak password/i,                        'Senha fraca demais. Combine letras, números e símbolos.'],
+    [/failed to fetch|network ?error|load failed/i, 'Não conseguimos falar com o servidor. Verifique sua conexão e tente de novo.']
+  ];
+
+  function traduzir(erro){
+    if(!erro) return 'Ocorreu um erro inesperado. Tente novamente.';
+    var texto = (erro.message || String(erro));
+    for(var i = 0; i < TRADUCOES.length; i++){
+      if(TRADUCOES[i][0].test(texto)) return TRADUCOES[i][1];
+    }
+    return 'Não foi possível concluir a operação. (' + texto + ')';
+  }
+
+  // ---------- Mensagens na tela ----------
+  function mostrarMsg(texto, tipo){
+    msg.textContent = texto;
+    msg.className = 'auth-msg ' + (tipo || 'info');
+    msg.hidden = false;
+  }
+  function limparMsg(){ msg.hidden = true; msg.textContent = ''; }
+
+  function ocupado(botao, estaOcupado, rotuloOcupado){
+    if(!botao.dataset.rotulo) botao.dataset.rotulo = botao.textContent;
+    botao.disabled = estaOcupado;
+    botao.textContent = estaOcupado ? (rotuloOcupado || 'Aguarde…') : botao.dataset.rotulo;
+  }
+
+  // ---------- Abas ----------
+  function trocarAba(aba){
+    var ehEntrar = (aba === 'entrar');
+    tabEntrar.classList.toggle('active', ehEntrar);
+    tabCriar.classList.toggle('active', !ehEntrar);
+    formEntrar.hidden = !ehEntrar;
+    formCriar.hidden = ehEntrar;
+  }
+  tabEntrar.addEventListener('click', function(){ limparMsg(); trocarAba('entrar'); });
+  tabCriar.addEventListener('click', function(){ limparMsg(); trocarAba('criar'); });
+
+  // ---------- Estado da sessão ----------
+  var perfilCarregadoDe = null;
+
+  function aplicarSessao(sessao){
+    carregando.hidden = true;
+    conteudo.hidden = false;
+
+    if(sessao && sessao.user){
+      gate.hidden = true;
+      appRoot.hidden = false;
+      barEmail.textContent = sessao.user.email || '';
+      // Enquanto o perfil não chega, mostra o que já veio nos metadados do token.
+      var meta = sessao.user.user_metadata || {};
+      barNome.textContent = meta.nome || (sessao.user.email || '').split('@')[0] || 'Usuário';
+    } else {
+      appRoot.hidden = true;
+      gate.hidden = false;
+      perfilCarregadoDe = null;
+      barNome.textContent = '—';
+      barEmail.textContent = '';
+    }
+  }
+
+  // Consulta a tabela profiles. Precisa rodar FORA do callback de
+  // onAuthStateChange — o supabase-js serializa as chamadas de auth e trava se
+  // um .from() for disparado de dentro do callback. Daí o setTimeout(..., 0).
+  function carregarPerfil(usuario){
+    if(!usuario || perfilCarregadoDe === usuario.id) return;
+    perfilCarregadoDe = usuario.id;
+    sb.from('profiles')
+      .select('nome, empresa')
+      .eq('id', usuario.id)
+      .maybeSingle()
+      .then(function(res){
+        if(res.error || !res.data) return;
+        if(res.data.nome) barNome.textContent = res.data.nome;
+        if(res.data.empresa) barEmail.textContent = res.data.empresa + ' · ' + (usuario.email || '');
+      })
+      .catch(function(){ /* a barra continua com o nome dos metadados */ });
+  }
+
+  // INITIAL_SESSION é o evento que restaura a sessão salva no navegador.
+  sb.auth.onAuthStateChange(function(evento, sessao){
+    aplicarSessao(sessao);
+    if(evento === 'PASSWORD_RECOVERY'){
+      mostrarMsg('Você chegou pelo link de redefinição. Defina uma nova senha pelo painel do Supabase ou peça um novo link ao administrador.', 'info');
+    }
+    if(sessao && sessao.user){
+      setTimeout(function(){ carregarPerfil(sessao.user); }, 0);
+    }
+  });
+
+  // ---------- Entrar ----------
+  formEntrar.addEventListener('submit', function(e){
+    e.preventDefault();
+    limparMsg();
+    var email = $('entrarEmail').value.trim();
+    var senha = $('entrarSenha').value;
+
+    if(!email || !senha){
+      mostrarMsg('Preencha e-mail e senha.', 'erro');
+      return;
+    }
+
+    ocupado(btnEntrar, true, 'Entrando…');
+    sb.auth.signInWithPassword({ email: email, password: senha })
+      .then(function(res){
+        if(res.error){ mostrarMsg(traduzir(res.error), 'erro'); return; }
+        limparMsg();
+        $('entrarSenha').value = '';
+      })
+      .catch(function(erro){ mostrarMsg(traduzir(erro), 'erro'); })
+      .then(function(){ ocupado(btnEntrar, false); });
+  });
+
+  // ---------- Criar conta ----------
+  formCriar.addEventListener('submit', function(e){
+    e.preventDefault();
+    limparMsg();
+    var nome    = $('criarNome').value.trim();
+    var empresa = $('criarEmpresa').value.trim();
+    var email   = $('criarEmail').value.trim();
+    var senha   = $('criarSenha').value;
+    var senha2  = $('criarSenha2').value;
+
+    if(!nome){ mostrarMsg('Informe seu nome.', 'erro'); return; }
+    if(!email){ mostrarMsg('Informe seu e-mail.', 'erro'); return; }
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ mostrarMsg('E-mail inválido. Confira o endereço digitado.', 'erro'); return; }
+    if(senha.length < 8){ mostrarMsg('A senha precisa ter pelo menos 8 caracteres.', 'erro'); return; }
+    if(senha !== senha2){ mostrarMsg('As senhas não conferem.', 'erro'); return; }
+
+    ocupado(btnCriar, true, 'Criando…');
+    sb.auth.signUp({
+      email: email,
+      password: senha,
+      options: {
+        // O trigger on_auth_user_created lê estes campos de raw_user_meta_data
+        // para preencher public.profiles.
+        data: { nome: nome, empresa: empresa },
+        emailRedirectTo: window.location.origin + window.location.pathname
+      }
+    })
+      .then(function(res){
+        if(res.error){ mostrarMsg(traduzir(res.error), 'erro'); return; }
+
+        var dados = res.data || {};
+        // Com "Confirm email" ligado, um e-mail já cadastrado volta como
+        // sucesso, mas com a lista de identities vazia.
+        if(dados.user && Array.isArray(dados.user.identities) && dados.user.identities.length === 0){
+          trocarAba('entrar');
+          mostrarMsg('Já existe uma conta com esse e-mail. Use a aba "Entrar" ou redefina sua senha.', 'erro');
+          return;
+        }
+
+        if(dados.session){
+          // Confirmação de e-mail desligada: já entra direto.
+          // O onAuthStateChange cuida de liberar a aplicação.
+          limparMsg();
+          formCriar.reset();
+          return;
+        }
+
+        // Confirmação de e-mail ligada: nenhuma sessão ainda.
+        formCriar.reset();
+        trocarAba('entrar');
+        $('entrarEmail').value = email;
+        mostrarMsg('Conta criada. Enviamos um link de confirmação para ' + email + '. Confirme o e-mail (verifique também o spam) e depois entre por aqui.', 'ok');
+      })
+      .catch(function(erro){ mostrarMsg(traduzir(erro), 'erro'); })
+      .then(function(){ ocupado(btnCriar, false); });
+  });
+
+  // ---------- Redefinir senha ----------
+  $('esqueciSenhaBtn').addEventListener('click', function(){
+    limparMsg();
+    var email = $('entrarEmail').value.trim();
+    if(!email){
+      mostrarMsg('Digite seu e-mail no campo acima e clique de novo em "Esqueci minha senha".', 'info');
+      $('entrarEmail').focus();
+      return;
+    }
+    sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname })
+      .then(function(res){
+        if(res.error){ mostrarMsg(traduzir(res.error), 'erro'); return; }
+        mostrarMsg('Se existir uma conta para ' + email + ', enviamos um link de redefinição de senha. Verifique sua caixa de entrada e o spam.', 'ok');
+      })
+      .catch(function(erro){ mostrarMsg(traduzir(erro), 'erro'); });
+  });
+
+  // ---------- Sair ----------
+  btnSair.addEventListener('click', function(){
+    sb.auth.signOut()
+      .then(function(){
+        // onAuthStateChange devolve o gate; só limpamos os campos.
+        formEntrar.reset();
+        formCriar.reset();
+        trocarAba('entrar');
+        limparMsg();
+      })
+      .catch(function(erro){ mostrarMsg(traduzir(erro), 'erro'); });
+  });
+})();
 </script>
 </body>
 </html>
