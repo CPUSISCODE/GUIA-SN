@@ -105,9 +105,13 @@ A base fiscal. Migration:
 10.687 registros, dos quais 2.052 com segmento e MVA, e 550 monofásicos. Índices parciais
 em `segmento` e `monofasico`.
 
-RLS habilitado, com uma única policy: `select` liberado para a role `authenticated`
-(`using (true)`). Não há policy de escrita — atualizar a base é tarefa do `service_role`,
-fora do navegador. Ver [`supabase/seed/README.md`](supabase/seed/README.md).
+RLS habilitado, com uma única policy de `select` para a role `authenticated`, condicionada
+a `private.usuario_liberado()` — ou seja, **estar autenticado não basta: a conta precisa
+estar aprovada e não bloqueada**. Sem isso o RLS devolve lista vazia e a ferramenta não tem
+o que consultar. Ver [Administração](#administração).
+
+Não há policy de escrita — atualizar a base é tarefa do `service_role`, fora do navegador.
+Ver [`supabase/seed/README.md`](supabase/seed/README.md).
 
 ### Tabela `public.ncm_versao`
 
