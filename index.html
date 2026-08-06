@@ -338,6 +338,114 @@
     padding:5px 12px; font-size:12px; flex:none;
   }
   .user-bar button:hover{background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.5);}
+
+  /* ---------- Painel de administração ---------- */
+  .adm-sub-tabs{display:flex; gap:0; border-bottom:1px solid var(--line); margin:18px 0 16px;}
+  .adm-sub-tabs button{
+    background:transparent; color:var(--ink-soft); border:none; border-radius:0;
+    border-bottom:2px solid transparent; font-size:13px; font-weight:600; padding:9px 16px;
+  }
+  .adm-sub-tabs button:hover{background:#f0ede4; color:var(--ink);}
+  .adm-sub-tabs button.active{color:var(--ink); border-bottom-color:var(--gold); background:transparent;}
+
+  .adm-resumo{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+  .adm-card{
+    flex:1 1 130px; background:var(--paper-raised); border:1px solid var(--line);
+    border-radius:4px; padding:12px 14px;
+  }
+  .adm-card .rotulo{
+    font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--ink-soft); margin-bottom:5px;
+  }
+  .adm-card .valor{font-family:var(--serif); font-size:24px; font-weight:700; line-height:1;}
+
+  .adm-barra{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px;}
+  .adm-barra input[type=text]{
+    flex:1 1 220px; font-family:var(--sans); font-size:13.5px; padding:8px 11px;
+    border:1px solid var(--line); border-radius:3px; background:#fdfcf9; color:var(--ink);
+  }
+  .adm-barra input[type=text]:focus{outline:2px solid var(--gold); outline-offset:1px; border-color:var(--gold);}
+  .adm-barra select{width:auto; flex:0 0 auto; font-size:13px; padding:8px 10px;}
+
+  .adm-tabela-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:4px; background:var(--paper-raised);}
+  table.adm-tabela{border-collapse:collapse; width:100%; font-size:12.5px; min-width:900px;}
+  table.adm-tabela th, table.adm-tabela td{
+    padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; vertical-align:middle;
+    white-space:nowrap;
+  }
+  table.adm-tabela th{
+    background:#efece3; font-family:var(--mono); font-size:10.5px; text-transform:uppercase;
+    letter-spacing:.07em; color:var(--ink-soft); font-weight:600; position:sticky; top:0;
+    cursor:pointer; user-select:none;
+  }
+  table.adm-tabela th:hover{background:#e7e3d7;}
+  table.adm-tabela th .seta{opacity:.5; font-size:9px; margin-left:3px;}
+  table.adm-tabela tbody tr{cursor:pointer;}
+  table.adm-tabela tbody tr:hover{background:#faf8f2;}
+  table.adm-tabela tbody tr.sel{background:var(--gold-soft);}
+  table.adm-tabela td.mono{font-family:var(--mono); font-size:11.5px;}
+  table.adm-tabela td.num{text-align:right; font-family:var(--mono);}
+  .adm-vazio{padding:26px 16px; text-align:center; color:var(--ink-soft); font-size:13px;}
+
+  .pill{
+    display:inline-block; font-family:var(--mono); font-size:10px; padding:3px 8px;
+    border-radius:20px; letter-spacing:.04em; border:1px solid; white-space:nowrap;
+  }
+  .pill.ok{background:var(--green-soft); color:var(--green); border-color:#b9d0c0;}
+  .pill.pend{background:var(--gold-soft); color:#5c3f14; border-color:#d8bd85;}
+  .pill.no{background:var(--red-soft); color:var(--red); border-color:#d9b6ab;}
+  .pill.adm{background:#e2e6ef; color:#2b3a52; border-color:#c2cadb;}
+
+  .adm-detalhe{
+    margin-top:16px; background:var(--paper-raised); border:1px solid var(--line);
+    border-left:4px solid var(--gold); border-radius:4px; padding:18px;
+  }
+  .adm-detalhe h3{
+    font-family:var(--serif); font-size:18px; margin:0 0 2px; font-weight:700;
+  }
+  .adm-detalhe .sub{font-family:var(--mono); font-size:12px; color:var(--ink-soft); margin-bottom:16px; overflow-wrap:anywhere;}
+  .adm-dados{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:18px;
+  }
+  .adm-dados .item .rotulo{
+    font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--ink-soft); margin-bottom:3px;
+  }
+  .adm-dados .item .valor{font-size:13.5px;}
+  .adm-acoes{display:flex; gap:8px; flex-wrap:wrap; align-items:center; padding-top:14px; border-top:1px solid var(--line);}
+  .adm-acoes label{font-size:12px; color:var(--ink-soft); font-weight:600;}
+  .adm-acoes input[type=number]{width:70px; padding:7px 8px; font-size:13px;}
+  .adm-msg{margin-top:12px; padding:10px 12px; border-radius:3px; font-size:12.5px; border:1px solid;}
+  .adm-msg.ok{background:var(--green-soft); border-color:#b9d0c0; color:var(--green);}
+  .adm-msg.erro{background:var(--red-soft); border-color:#d9b6ab; color:var(--red);}
+
+  .adm-secao{margin-top:18px;}
+  .adm-secao h4{
+    font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--ink-soft); margin:0 0 8px; padding-bottom:6px; border-bottom:1px solid var(--line);
+  }
+
+  .adm-api pre{
+    background:var(--ink); color:#dfe4ec; padding:14px 16px; border-radius:4px;
+    overflow-x:auto; font-family:var(--mono); font-size:12px; line-height:1.55; margin:0 0 14px;
+  }
+  .adm-api code{font-family:var(--mono); font-size:12.5px; background:#efece3; padding:1px 5px; border-radius:3px;}
+  .adm-api p{margin:0 0 12px; font-size:13.5px;}
+  .adm-api h4{
+    font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--ink-soft); margin:20px 0 8px; padding-bottom:6px; border-bottom:1px solid var(--line);
+  }
+
+  /* Aviso de conta não liberada */
+  .espera{
+    max-width:520px; margin:60px auto; background:var(--paper-raised); border:1px solid var(--line);
+    border-top:4px solid var(--gold); border-radius:4px; padding:28px; text-align:center;
+  }
+  .espera h2{font-family:var(--serif); font-size:20px; margin:0 0 10px;}
+  .espera p{font-size:13.5px; color:var(--ink-soft); margin:0 0 8px;}
+  .espera .quem{font-family:var(--mono); font-size:12px; margin-top:14px; color:var(--ink);}
+
+  @media print{ .adm-barra, .adm-sub-tabs, .adm-acoes{display:none;} }
   @media print{ .user-bar{display:none;} }
 </style>
 </head>
@@ -423,12 +531,23 @@
   </div>
 </div>
 
-<div class="wrap">
+<!-- Mostrado no lugar da ferramenta enquanto a conta não estiver liberada. -->
+<div id="esperaLiberacao" class="wrap" hidden>
+  <div class="espera">
+    <h2 id="esperaTitulo">Conta aguardando liberação</h2>
+    <p id="esperaTexto">Seu cadastro foi criado, mas ainda precisa ser liberado por um administrador. Você receberá acesso assim que isso acontecer.</p>
+    <p>Se já faz tempo, fale com quem administra a ferramenta.</p>
+    <div class="quem" id="esperaQuem"></div>
+  </div>
+</div>
+
+<div class="wrap" id="conteudoFerramenta">
 
   <div class="tabs">
     <button id="tabBtnConsulta" class="active">Consulta NCM &amp; XML</button>
     <button id="tabBtnAudit">Auditoria de Cadastro</button>
     <button id="tabBtnCustoOp">Custo Operacional</button>
+    <button id="tabBtnAdmin" hidden>Administração</button>
   </div>
 
   <div id="pageConsulta" class="tab-page active">
@@ -660,6 +779,62 @@
       </table>
     </div>
   </div><!-- /pageAudit -->
+
+
+  <div id="pageAdmin" class="tab-page">
+
+    <div class="adm-sub-tabs">
+      <button type="button" id="admSubUsuarios" class="active">Usuários</button>
+      <button type="button" id="admSubApi">API</button>
+    </div>
+
+    <div id="admPainelUsuarios">
+      <div class="adm-resumo">
+        <div class="adm-card"><div class="rotulo">Usuários</div><div class="valor" id="admTotalUsuarios">—</div></div>
+        <div class="adm-card"><div class="rotulo">Aprovados</div><div class="valor" id="admTotalAprovados">—</div></div>
+        <div class="adm-card"><div class="rotulo">Aguardando</div><div class="valor" id="admTotalPendentes">—</div></div>
+        <div class="adm-card"><div class="rotulo">Bloqueados</div><div class="valor" id="admTotalBloqueados">—</div></div>
+        <div class="adm-card"><div class="rotulo">Administradores</div><div class="valor" id="admTotalAdmins">—</div></div>
+      </div>
+
+      <div class="adm-barra">
+        <input type="text" id="admBusca" placeholder="Filtrar por nome, e-mail ou empresa…" autocomplete="off">
+        <select id="admFiltro">
+          <option value="">Todos os usuários</option>
+          <option value="pendentes">Aguardando aprovação</option>
+          <option value="aprovados">Aprovados</option>
+          <option value="bloqueados">Bloqueados</option>
+          <option value="admins">Administradores</option>
+        </select>
+        <button class="ghost small" id="admRecarregar">Recarregar</button>
+        <button class="ghost small" id="admExportar">⬇ Exportar CSV</button>
+      </div>
+
+      <div class="adm-tabela-wrap">
+        <table class="adm-tabela">
+          <thead>
+            <tr>
+              <th data-col="nome">Nome<span class="seta"></span></th>
+              <th data-col="email">E-mail<span class="seta"></span></th>
+              <th data-col="empresa">Empresa<span class="seta"></span></th>
+              <th data-col="situacao">Situação<span class="seta"></span></th>
+              <th data-col="assinou_em">Assinou em<span class="seta"></span></th>
+              <th data-col="ultimo_acesso">Último acesso<span class="seta"></span></th>
+              <th data-col="dispositivos">Disp.<span class="seta"></span></th>
+              <th data-col="total_acessos">Acessos<span class="seta"></span></th>
+            </tr>
+          </thead>
+          <tbody id="admCorpoTabela"></tbody>
+        </table>
+        <div class="adm-vazio" id="admVazio">Carregando usuários…</div>
+      </div>
+
+      <div id="admDetalhe" class="adm-detalhe" hidden></div>
+    </div>
+
+    <div id="admPainelApi" class="adm-api" hidden></div>
+
+  </div><!-- /pageAdmin -->
 
 
   <div class="footer-note">Alíquota interna geral do Acre: 19% (Art. 17, I, RICMS/AC) · Ferramenta de apoio — validar com contador antes de aplicar em documentos fiscais.</div>
@@ -1792,13 +1967,19 @@ document.getElementById('applyDefaultsBtn').addEventListener('click', ()=>{
 document.getElementById('tabBtnConsulta').addEventListener('click', ()=>switchTab('consulta'));
 document.getElementById('tabBtnAudit').addEventListener('click', ()=>switchTab('audit'));
 document.getElementById('tabBtnCustoOp').addEventListener('click', ()=>switchTab('custoop'));
+document.getElementById('tabBtnAdmin').addEventListener('click', ()=>switchTab('admin'));
 function switchTab(t){
   document.getElementById('tabBtnConsulta').classList.toggle('active', t==='consulta');
   document.getElementById('tabBtnAudit').classList.toggle('active', t==='audit');
   document.getElementById('tabBtnCustoOp').classList.toggle('active', t==='custoop');
+  document.getElementById('tabBtnAdmin').classList.toggle('active', t==='admin');
   document.getElementById('pageConsulta').classList.toggle('active', t==='consulta');
   document.getElementById('pageAudit').classList.toggle('active', t==='audit');
   document.getElementById('pageCustoOp').classList.toggle('active', t==='custoop');
+  document.getElementById('pageAdmin').classList.toggle('active', t==='admin');
+  // A aba de administração só existe para admins; se ela sumir enquanto estiver
+  // aberta, cai de volta na consulta.
+  if(t === 'admin' && document.getElementById('tabBtnAdmin').hidden) switchTab('consulta');
 }
 
 // ---------- Custo Operacional ----------
@@ -2659,6 +2840,7 @@ document.getElementById('auditTemplateBtn').addEventListener('click', function(e
   var btnSair    = $('sairBtn');
   var barNome    = $('userBarNome');
   var barEmail   = $('userBarEmail');
+  var tabAdmin   = $('tabBtnAdmin');
 
   if(typeof window.supabase === 'undefined' || !window.supabase.createClient){
     carregando.textContent = 'Não foi possível carregar o componente de acesso. Verifique sua conexão e recarregue a página.';
@@ -2744,6 +2926,12 @@ document.getElementById('auditTemplateBtn').addEventListener('click', function(e
       appRoot.hidden = true;
       gate.hidden = false;
       perfilCarregadoDe = null;
+      perfilAtual = null;
+      souAdmin = false;
+      admSelecionado = null;
+      if(tabAdmin) tabAdmin.hidden = true;      // some a aba de administração
+      var det = document.getElementById('admDetalhe');
+      if(det){ det.hidden = true; det.innerHTML = ''; }
       barNome.textContent = '—';
       barEmail.textContent = '';
     }
@@ -2752,19 +2940,154 @@ document.getElementById('auditTemplateBtn').addEventListener('click', function(e
   // Consulta a tabela profiles. Precisa rodar FORA do callback de
   // onAuthStateChange — o supabase-js serializa as chamadas de auth e trava se
   // um .from() for disparado de dentro do callback. Daí o setTimeout(..., 0).
+  var perfilAtual = null;
+  var souAdmin = false;
+
   function carregarPerfil(usuario){
     if(!usuario || perfilCarregadoDe === usuario.id) return;
     perfilCarregadoDe = usuario.id;
     sb.from('profiles')
-      .select('nome, empresa')
+      .select('nome, empresa, aprovado, bloqueado, limite_dispositivos')
       .eq('id', usuario.id)
       .maybeSingle()
       .then(function(res){
-        if(res.error || !res.data) return;
-        if(res.data.nome) barNome.textContent = res.data.nome;
-        if(res.data.empresa) barEmail.textContent = res.data.empresa + ' · ' + (usuario.email || '');
+        if(res.error) throw res.error;
+        perfilAtual = res.data || null;
+        if(perfilAtual){
+          if(perfilAtual.nome) barNome.textContent = perfilAtual.nome;
+          if(perfilAtual.empresa) barEmail.textContent = perfilAtual.empresa + ' · ' + (usuario.email || '');
+        }
+        var liberado = aplicarLiberacao(usuario);
+        if(liberado){
+          carregarBaseNcm();
+          registrarDispositivo(usuario);
+        }
+        // A policy de admins só devolve linha para quem é admin.
+        return sb.from('admins').select('id').eq('id', usuario.id).maybeSingle();
       })
-      .catch(function(){ /* a barra continua com o nome dos metadados */ });
+      .then(function(res){
+        souAdmin = !!(res && res.data);
+        tabAdmin.hidden = !souAdmin;
+        if(souAdmin && !painelAdminPronto) prepararPainelAdmin();
+      })
+      .catch(function(){ /* a barra segue com o nome vindo dos metadados */ });
+  }
+
+  // ---------- Liberação da conta ----------
+  // Sem aprovação, o RLS já nega a base fiscal. Aqui é só para explicar o que
+  // está acontecendo em vez de deixar a ferramenta vazia e sem motivo aparente.
+  function aplicarLiberacao(usuario){
+    var liberado = !!(perfilAtual && perfilAtual.aprovado && !perfilAtual.bloqueado);
+    var conteudo = document.getElementById('conteudoFerramenta');
+    var espera   = document.getElementById('esperaLiberacao');
+    if(conteudo) conteudo.hidden = !liberado;
+    if(espera){
+      espera.hidden = liberado;
+      if(!liberado){
+        var bloqueado = !!(perfilAtual && perfilAtual.bloqueado);
+        document.getElementById('esperaTitulo').textContent =
+          bloqueado ? 'Acesso bloqueado' : 'Conta aguardando liberação';
+        document.getElementById('esperaTexto').textContent = bloqueado
+          ? 'O acesso desta conta foi bloqueado por um administrador.'
+          : 'Seu cadastro foi criado, mas ainda precisa ser liberado por um administrador. Assim que isso acontecer, a ferramenta aparece aqui.';
+        document.getElementById('esperaQuem').textContent = usuario.email || '';
+      }
+    }
+    return liberado;
+  }
+
+  // ---------- Dispositivo ----------
+  // A "impressão" é só um identificador aleatório guardado neste navegador —
+  // não é fingerprinting: some se o usuário limpar os dados do site.
+  function obterImpressao(){
+    var chave = 'guia-sn-dispositivo';
+    try {
+      var v = localStorage.getItem(chave);
+      if(!v){
+        v = (window.crypto && crypto.randomUUID)
+          ? crypto.randomUUID()
+          : (Date.now().toString(36) + Math.random().toString(36).slice(2));
+        localStorage.setItem(chave, v);
+      }
+      return v;
+    } catch(e){ return 'sem-storage'; }
+  }
+
+  function descreverDispositivo(){
+    var ua = navigator.userAgent || '';
+    var tipo = 'computador';
+    if(/iPad|Tablet|PlayBook|Silk|Android(?!.*Mobile)/i.test(ua)) tipo = 'tablet';
+    else if(/Mobi|Android|iPhone|iPod|Windows Phone|IEMobile/i.test(ua)) tipo = 'celular';
+
+    var navegador = 'Outro';
+    if(/Edg\//.test(ua)) navegador = 'Edge';
+    else if(/OPR\/|Opera/.test(ua)) navegador = 'Opera';
+    else if(/Chrome\//.test(ua)) navegador = 'Chrome';
+    else if(/Firefox\//.test(ua)) navegador = 'Firefox';
+    else if(/Safari\//.test(ua)) navegador = 'Safari';
+
+    var sistema = 'Outro';
+    if(/Windows/.test(ua)) sistema = 'Windows';
+    else if(/Android/.test(ua)) sistema = 'Android';
+    else if(/iPhone|iPad|iPod/.test(ua)) sistema = 'iOS';
+    else if(/Mac OS X/.test(ua)) sistema = 'macOS';
+    else if(/Linux/.test(ua)) sistema = 'Linux';
+
+    // Fuso do navegador como aproximação de região — é o que dá para saber sem
+    // um servidor lendo o IP. Vem do cliente, então serve de indicação, não de prova.
+    var fuso = '';
+    try { fuso = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch(e){}
+
+    return { tipo: tipo, navegador: navegador, sistema: sistema, fuso: fuso, ua: ua.slice(0, 400) };
+  }
+
+  function registrarDispositivo(usuario){
+    var impressao = obterImpressao();
+    var info = descreverDispositivo();
+    var agora = new Date().toISOString();
+
+    // Atualiza primeiro (aparelho conhecido). Só se nada for atualizado é que
+    // inserimos — e é o insert que passa pelo limite aplicado no banco.
+    sb.from('dispositivos')
+      .update({ ultimo_acesso: agora, tipo: info.tipo, navegador: info.navegador,
+                sistema: info.sistema, fuso: info.fuso, user_agent: info.ua })
+      .eq('user_id', usuario.id).eq('impressao', impressao)
+      .select('id')
+      .then(function(res){
+        if(!res.error && res.data && res.data.length) return res.data[0].id;
+        return sb.from('dispositivos')
+          .insert({ user_id: usuario.id, impressao: impressao, tipo: info.tipo,
+                    navegador: info.navegador, sistema: info.sistema, fuso: info.fuso,
+                    user_agent: info.ua })
+          .select('id').maybeSingle()
+          .then(function(r2){
+            if(r2.error) throw r2.error;
+            return r2.data && r2.data.id;
+          });
+      })
+      .then(function(idDispositivo){
+        return sb.from('acessos').insert({
+          user_id: usuario.id, dispositivo_id: idDispositivo || null,
+          tipo: info.tipo, fuso: info.fuso
+        });
+      })
+      .catch(function(erro){
+        var msg = (erro && erro.message) || '';
+        if(/limite de .* dispositivo/i.test(msg)) avisarLimiteDispositivos(msg);
+      });
+  }
+
+  function avisarLimiteDispositivos(msg){
+    var conteudo = document.getElementById('conteudoFerramenta');
+    var espera   = document.getElementById('esperaLiberacao');
+    if(conteudo) conteudo.hidden = true;
+    if(espera){
+      espera.hidden = false;
+      document.getElementById('esperaTitulo').textContent = 'Limite de dispositivos atingido';
+      document.getElementById('esperaTexto').textContent = msg +
+        ' Entre pelos aparelhos já registrados ou peça a um administrador para liberar espaço.';
+      document.getElementById('esperaQuem').textContent = '';
+    }
   }
 
   // ---------- Base fiscal (tabela public.ncm) ----------
@@ -2854,6 +3177,362 @@ document.getElementById('auditTemplateBtn').addEventListener('click', function(e
       .then(function(){ baseSincronizando = false; });
   }
 
+  // ---------- Painel de administração ----------
+  var painelAdminPronto = false;
+  var admUsuarios = [];
+  var admSelecionado = null;
+  var admOrdem = { col: 'assinou_em', desc: true };
+
+  function fmtData(v){
+    if(!v) return '—';
+    var d = new Date(v);
+    if(isNaN(d)) return '—';
+    return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+  function fmtDataCurta(v){
+    if(!v) return '—';
+    var d = new Date(v);
+    return isNaN(d) ? '—' : d.toLocaleDateString('pt-BR');
+  }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+  function situacao(u){
+    if(u.bloqueado) return { txt: 'Bloqueado', cls: 'no' };
+    if(!u.aprovado) return { txt: 'Aguardando', cls: 'pend' };
+    return { txt: 'Aprovado', cls: 'ok' };
+  }
+
+  function prepararPainelAdmin(){
+    painelAdminPronto = true;
+
+    $('admSubUsuarios').addEventListener('click', function(){ trocarSubAba('usuarios'); });
+    $('admSubApi').addEventListener('click', function(){ trocarSubAba('api'); });
+    $('admRecarregar').addEventListener('click', carregarUsuariosAdmin);
+    $('admExportar').addEventListener('click', exportarCsvAdmin);
+    $('admBusca').addEventListener('input', renderTabelaAdmin);
+    $('admFiltro').addEventListener('change', renderTabelaAdmin);
+
+    document.querySelectorAll('#pageAdmin table.adm-tabela th[data-col]').forEach(function(th){
+      th.addEventListener('click', function(){
+        var col = th.getAttribute('data-col');
+        if(admOrdem.col === col) admOrdem.desc = !admOrdem.desc;
+        else { admOrdem.col = col; admOrdem.desc = true; }
+        renderTabelaAdmin();
+      });
+    });
+
+    montarAbaApi();
+    carregarUsuariosAdmin();
+  }
+
+  function trocarSubAba(qual){
+    var ehUsuarios = qual === 'usuarios';
+    $('admSubUsuarios').classList.toggle('active', ehUsuarios);
+    $('admSubApi').classList.toggle('active', !ehUsuarios);
+    $('admPainelUsuarios').hidden = !ehUsuarios;
+    $('admPainelApi').hidden = ehUsuarios;
+  }
+
+  function carregarUsuariosAdmin(){
+    $('admVazio').hidden = false;
+    $('admVazio').textContent = 'Carregando usuários…';
+    sb.rpc('listar_usuarios')
+      .then(function(res){
+        if(res.error) throw res.error;
+        admUsuarios = res.data || [];
+        atualizarResumoAdmin();
+        renderTabelaAdmin();
+      })
+      .catch(function(erro){
+        admUsuarios = [];
+        $('admCorpoTabela').innerHTML = '';
+        $('admVazio').hidden = false;
+        $('admVazio').textContent = 'Não foi possível carregar os usuários. ' + ((erro && erro.message) || '');
+      });
+  }
+
+  function atualizarResumoAdmin(){
+    var n = admUsuarios.length;
+    $('admTotalUsuarios').textContent   = n.toLocaleString('pt-BR');
+    $('admTotalAprovados').textContent  = admUsuarios.filter(function(u){ return u.aprovado && !u.bloqueado; }).length;
+    $('admTotalPendentes').textContent  = admUsuarios.filter(function(u){ return !u.aprovado && !u.bloqueado; }).length;
+    $('admTotalBloqueados').textContent = admUsuarios.filter(function(u){ return u.bloqueado; }).length;
+    $('admTotalAdmins').textContent     = admUsuarios.filter(function(u){ return u.admin; }).length;
+  }
+
+  function usuariosFiltrados(){
+    var termo = ($('admBusca').value || '').trim().toLowerCase();
+    var filtro = $('admFiltro').value;
+    var lista = admUsuarios.filter(function(u){
+      if(filtro === 'pendentes'  && (u.aprovado || u.bloqueado)) return false;
+      if(filtro === 'aprovados'  && (!u.aprovado || u.bloqueado)) return false;
+      if(filtro === 'bloqueados' && !u.bloqueado) return false;
+      if(filtro === 'admins'     && !u.admin) return false;
+      if(!termo) return true;
+      return [u.nome, u.email, u.empresa].some(function(c){
+        return c && String(c).toLowerCase().includes(termo);
+      });
+    });
+
+    var col = admOrdem.col;
+    lista.sort(function(a, b){
+      var va, vb;
+      if(col === 'situacao'){ va = situacao(a).txt; vb = situacao(b).txt; }
+      else { va = a[col]; vb = b[col]; }
+      if(va == null) va = '';
+      if(vb == null) vb = '';
+      if(typeof va === 'number' && typeof vb === 'number') return admOrdem.desc ? vb - va : va - vb;
+      va = String(va); vb = String(vb);
+      return admOrdem.desc ? vb.localeCompare(va, 'pt-BR') : va.localeCompare(vb, 'pt-BR');
+    });
+    return lista;
+  }
+
+  function renderTabelaAdmin(){
+    var lista = usuariosFiltrados();
+    var corpo = $('admCorpoTabela');
+
+    document.querySelectorAll('#pageAdmin th[data-col] .seta').forEach(function(s){
+      var th = s.parentNode;
+      s.textContent = th.getAttribute('data-col') === admOrdem.col ? (admOrdem.desc ? '▼' : '▲') : '';
+    });
+
+    if(!lista.length){
+      corpo.innerHTML = '';
+      $('admVazio').hidden = false;
+      $('admVazio').textContent = admUsuarios.length ? 'Nenhum usuário com esse filtro.' : 'Nenhum usuário cadastrado ainda.';
+      return;
+    }
+    $('admVazio').hidden = true;
+
+    corpo.innerHTML = lista.map(function(u){
+      var s = situacao(u);
+      return '<tr data-id="' + esc(u.id) + '"' + (admSelecionado === u.id ? ' class="sel"' : '') + '>' +
+        '<td>' + esc(u.nome || '—') + (u.admin ? ' <span class="pill adm">ADMIN</span>' : '') + '</td>' +
+        '<td class="mono">' + esc(u.email) + '</td>' +
+        '<td>' + esc(u.empresa || '—') + '</td>' +
+        '<td><span class="pill ' + s.cls + '">' + s.txt + '</span></td>' +
+        '<td class="mono">' + fmtDataCurta(u.assinou_em) + '</td>' +
+        '<td class="mono">' + fmtDataCurta(u.ultimo_acesso || u.ultimo_login) + '</td>' +
+        '<td class="num">' + (u.dispositivos || 0) + '/' + (u.limite_dispositivos || 2) + '</td>' +
+        '<td class="num">' + (u.total_acessos || 0) + '</td>' +
+        '</tr>';
+    }).join('');
+
+    corpo.querySelectorAll('tr').forEach(function(tr){
+      tr.addEventListener('click', function(){ abrirDetalhe(tr.getAttribute('data-id')); });
+    });
+  }
+
+  function abrirDetalhe(id){
+    var u = admUsuarios.find(function(x){ return x.id === id; });
+    if(!u) return;
+    admSelecionado = id;
+    renderTabelaAdmin();
+
+    var s = situacao(u);
+    var det = $('admDetalhe');
+    det.hidden = false;
+    det.innerHTML =
+      '<h3>' + esc(u.nome || 'Sem nome') + (u.admin ? ' <span class="pill adm">ADMIN</span>' : '') + '</h3>' +
+      '<div class="sub">' + esc(u.email) + (u.empresa ? ' · ' + esc(u.empresa) : '') + '</div>' +
+      '<div class="adm-dados">' +
+        '<div class="item"><div class="rotulo">Situação</div><div class="valor"><span class="pill ' + s.cls + '">' + s.txt + '</span></div></div>' +
+        '<div class="item"><div class="rotulo">Assinou em</div><div class="valor">' + fmtData(u.assinou_em) + '</div></div>' +
+        '<div class="item"><div class="rotulo">E-mail confirmado</div><div class="valor">' + (u.email_confirmado ? 'Sim' : 'Não') + '</div></div>' +
+        '<div class="item"><div class="rotulo">Último login</div><div class="valor">' + fmtData(u.ultimo_login) + '</div></div>' +
+        '<div class="item"><div class="rotulo">Último acesso</div><div class="valor">' + fmtData(u.ultimo_acesso) + '</div></div>' +
+        '<div class="item"><div class="rotulo">Total de acessos</div><div class="valor">' + (u.total_acessos || 0) + '</div></div>' +
+        '<div class="item"><div class="rotulo">Dispositivos</div><div class="valor">' + (u.dispositivos || 0) + ' de ' + (u.limite_dispositivos || 2) + '</div></div>' +
+      '</div>' +
+      '<div class="adm-acoes">' +
+        '<button class="small" id="admAprovar">' + (u.aprovado ? 'Revogar aprovação' : 'Aprovar acesso') + '</button>' +
+        '<button class="small ghost" id="admBloquear">' + (u.bloqueado ? 'Desbloquear' : 'Bloquear') + '</button>' +
+        '<label for="admLimite">Limite de dispositivos</label>' +
+        '<input type="number" id="admLimite" min="1" max="20" value="' + (u.limite_dispositivos || 2) + '">' +
+        '<button class="small ghost" id="admSalvarLimite">Salvar limite</button>' +
+        '<button class="small ghost" id="admAdmin">' + (u.admin ? 'Remover admin' : 'Tornar admin') + '</button>' +
+      '</div>' +
+      '<div class="adm-secao"><h4>Dispositivos conectados</h4><div id="admListaDisp">Carregando…</div></div>' +
+      '<div class="adm-secao"><h4>Últimos acessos</h4><div id="admListaAcessos">Carregando…</div></div>' +
+      '<div id="admMsg"></div>';
+
+    $('admAprovar').addEventListener('click', function(){
+      salvarPerfilAdmin(u.id, { aprovado: !u.aprovado });
+    });
+    $('admBloquear').addEventListener('click', function(){
+      salvarPerfilAdmin(u.id, { bloqueado: !u.bloqueado });
+    });
+    $('admSalvarLimite').addEventListener('click', function(){
+      var v = parseInt($('admLimite').value, 10);
+      if(isNaN(v) || v < 1 || v > 20){ msgAdmin('O limite precisa ficar entre 1 e 20.', 'erro'); return; }
+      salvarPerfilAdmin(u.id, { limite_dispositivos: v });
+    });
+    $('admAdmin').addEventListener('click', function(){
+      if(u.admin) chamarRpc('rebaixar_admin', { p_id: u.id }, 'Administrador removido.');
+      else chamarRpc('promover_admin', { p_email: u.email }, 'Usuário promovido a administrador.');
+    });
+
+    carregarDispositivosDe(u.id);
+    carregarAcessosDe(u.id);
+  }
+
+  function msgAdmin(texto, tipo){
+    var el = $('admMsg');
+    if(!el) return;
+    el.innerHTML = '<div class="adm-msg ' + (tipo || 'ok') + '">' + esc(texto) + '</div>';
+  }
+
+  // A mensagem tem de ser escrita DEPOIS do recarregamento: abrirDetalhe()
+  // reconstrói o HTML do detalhe e levaria o #admMsg junto.
+  function salvarPerfilAdmin(id, campos){
+    sb.from('profiles').update(campos).eq('id', id)
+      .then(function(res){
+        if(res.error) throw res.error;
+        return recarregarMantendoSelecao(id);
+      })
+      .then(function(){ msgAdmin('Alteração salva.', 'ok'); })
+      .catch(function(erro){ msgAdmin('Não foi possível salvar. ' + ((erro && erro.message) || ''), 'erro'); });
+  }
+
+  function chamarRpc(nome, args, sucesso){
+    var alvo = admSelecionado;
+    sb.rpc(nome, args)
+      .then(function(res){
+        if(res.error) throw res.error;
+        return recarregarMantendoSelecao(alvo);
+      })
+      .then(function(){ msgAdmin(sucesso, 'ok'); })
+      .catch(function(erro){ msgAdmin('Não foi possível concluir. ' + ((erro && erro.message) || ''), 'erro'); });
+  }
+
+  function recarregarMantendoSelecao(id){
+    return sb.rpc('listar_usuarios').then(function(res){
+      if(res.error) throw res.error;
+      admUsuarios = res.data || [];
+      atualizarResumoAdmin();
+      renderTabelaAdmin();
+      if(id) abrirDetalhe(id);
+    });
+  }
+
+  function carregarDispositivosDe(id){
+    sb.from('dispositivos')
+      .select('id, tipo, navegador, sistema, fuso, primeiro_acesso, ultimo_acesso')
+      .eq('user_id', id).order('ultimo_acesso', { ascending: false })
+      .then(function(res){
+        var el = $('admListaDisp');
+        if(!el) return;
+        if(res.error){ el.textContent = 'Não foi possível carregar os dispositivos.'; return; }
+        var d = res.data || [];
+        if(!d.length){ el.innerHTML = '<div class="adm-vazio">Nenhum dispositivo registrado.</div>'; return; }
+        el.innerHTML = '<div class="adm-tabela-wrap"><table class="adm-tabela" style="min-width:640px;"><thead><tr>' +
+          '<th>Tipo</th><th>Navegador</th><th>Sistema</th><th>Região (fuso)</th><th>Primeiro acesso</th><th>Último acesso</th><th></th>' +
+          '</tr></thead><tbody>' +
+          d.map(function(x){
+            return '<tr><td>' + esc(x.tipo) + '</td><td>' + esc(x.navegador || '—') + '</td><td>' + esc(x.sistema || '—') + '</td>' +
+              '<td class="mono">' + esc(x.fuso || '—') + '</td><td class="mono">' + fmtData(x.primeiro_acesso) + '</td>' +
+              '<td class="mono">' + fmtData(x.ultimo_acesso) + '</td>' +
+              '<td><button class="small ghost" data-disp="' + esc(x.id) + '">Remover</button></td></tr>';
+          }).join('') + '</tbody></table></div>';
+        el.querySelectorAll('button[data-disp]').forEach(function(b){
+          b.addEventListener('click', function(){
+            sb.from('dispositivos').delete().eq('id', b.getAttribute('data-disp'))
+              .then(function(r){
+                if(r.error) throw r.error;
+                msgAdmin('Dispositivo removido — o usuário liberou uma vaga.', 'ok');
+                carregarDispositivosDe(id);
+                return recarregarMantendoSelecao(null);
+              })
+              .catch(function(erro){ msgAdmin('Não foi possível remover. ' + ((erro && erro.message) || ''), 'erro'); });
+          });
+        });
+      });
+  }
+
+  function carregarAcessosDe(id){
+    sb.from('acessos')
+      .select('quando, tipo, fuso')
+      .eq('user_id', id).order('quando', { ascending: false }).limit(20)
+      .then(function(res){
+        var el = $('admListaAcessos');
+        if(!el) return;
+        if(res.error){ el.textContent = 'Não foi possível carregar os acessos.'; return; }
+        var a = res.data || [];
+        if(!a.length){ el.innerHTML = '<div class="adm-vazio">Nenhum acesso registrado.</div>'; return; }
+        el.innerHTML = '<div class="adm-tabela-wrap"><table class="adm-tabela" style="min-width:420px;"><thead><tr>' +
+          '<th>Quando</th><th>Dispositivo</th><th>Região (fuso)</th></tr></thead><tbody>' +
+          a.map(function(x){
+            return '<tr><td class="mono">' + fmtData(x.quando) + '</td><td>' + esc(x.tipo || '—') +
+              '</td><td class="mono">' + esc(x.fuso || '—') + '</td></tr>';
+          }).join('') + '</tbody></table></div>';
+      });
+  }
+
+  function exportarCsvAdmin(){
+    var lista = usuariosFiltrados();
+    var cab = ['Nome','E-mail','Empresa','Situacao','Admin','E-mail confirmado','Assinou em','Ultimo login','Ultimo acesso','Dispositivos','Limite','Total de acessos'];
+    var linhas = [cab].concat(lista.map(function(u){
+      return [u.nome || '', u.email || '', u.empresa || '', situacao(u).txt, u.admin ? 'sim' : 'nao',
+              u.email_confirmado ? 'sim' : 'nao', fmtData(u.assinou_em), fmtData(u.ultimo_login),
+              fmtData(u.ultimo_acesso), u.dispositivos || 0, u.limite_dispositivos || 2, u.total_acessos || 0];
+    }));
+    var csv = linhas.map(function(r){
+      return r.map(function(c){
+        var s = (c == null ? '' : c).toString();
+        return /[";\n,]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      }).join(';');
+    }).join('\n');
+    var blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'usuarios-guia-sn.csv';
+    a.click();
+  }
+
+  function montarAbaApi(){
+    var base = SUPABASE_URL + '/rest/v1';
+    $('admPainelApi').innerHTML =
+      '<p>A ferramenta já expõe uma API REST: o Supabase publica automaticamente cada tabela em ' +
+      '<code>/rest/v1/</code> através do PostgREST, com o RLS valendo igual. Toda chamada precisa da ' +
+      'chave publicável no cabeçalho <code>apikey</code> e de um token de usuário em <code>Authorization</code> — ' +
+      'sem o token, o RLS nega tudo.</p>' +
+
+      '<h4>Endereço base</h4>' +
+      '<pre>' + esc(base) + '</pre>' +
+
+      '<h4>Consultar um NCM</h4>' +
+      '<pre>curl "' + esc(base) + '/ncm?ncm=eq.22030000&amp;select=*" \\\n' +
+      '  -H "apikey: ' + esc(SUPABASE_CHAVE_PUBLICAVEL) + '" \\\n' +
+      '  -H "Authorization: Bearer SEU_TOKEN"</pre>' +
+
+      '<h4>Buscar por descrição</h4>' +
+      '<pre>curl "' + esc(base) + '/ncm?descricao=ilike.*cerveja*&amp;select=ncm,descricao,segmento,mva&amp;limit=20" \\\n' +
+      '  -H "apikey: ' + esc(SUPABASE_CHAVE_PUBLICAVEL) + '" \\\n' +
+      '  -H "Authorization: Bearer SEU_TOKEN"</pre>' +
+
+      '<h4>Só o que tem ST no Acre</h4>' +
+      '<pre>curl "' + esc(base) + '/ncm?segmento=not.is.null&amp;select=ncm,descricao,segmento,mva" \\\n' +
+      '  -H "apikey: ' + esc(SUPABASE_CHAVE_PUBLICAVEL) + '" \\\n' +
+      '  -H "Authorization: Bearer SEU_TOKEN"</pre>' +
+
+      '<h4>Como obter o token</h4>' +
+      '<pre>curl -X POST "' + esc(SUPABASE_URL) + '/auth/v1/token?grant_type=password" \\\n' +
+      '  -H "apikey: ' + esc(SUPABASE_CHAVE_PUBLICAVEL) + '" \\\n' +
+      '  -H "Content-Type: application/json" \\\n' +
+      '  -d \'{"email":"voce@empresa.com.br","password":"sua-senha"}\'</pre>' +
+      '<p>A resposta traz <code>access_token</code>, válido por 1 hora. O usuário precisa estar ' +
+      '<b>aprovado</b>: sem isso o RLS devolve lista vazia em <code>/ncm</code>.</p>' +
+
+      '<h4>O que ainda não existe</h4>' +
+      '<p>Não há chaves de API por cliente nem controle de uso por chave — hoje todo acesso passa ' +
+      'por uma conta de usuário. Para entregar a terceiros com chave própria, limite de requisições ' +
+      'e endpoints com formato próprio, o caminho é uma Edge Function; isso não está implementado.</p>';
+  }
+
   // INITIAL_SESSION é o evento que restaura a sessão salva no navegador.
   sb.auth.onAuthStateChange(function(evento, sessao){
     aplicarSessao(sessao);
@@ -2862,11 +3541,9 @@ document.getElementById('auditTemplateBtn').addEventListener('click', function(e
     }
     if(sessao && sessao.user){
       // Adiado com setTimeout porque o supabase-js trava se um .from() for
-      // disparado de dentro deste callback. Vale para o perfil e para a base.
-      setTimeout(function(){
-        carregarPerfil(sessao.user);
-        carregarBaseNcm();
-      }, 0);
+      // disparado de dentro deste callback. carregarPerfil() é quem dispara a
+      // sincronização da base, e só depois de confirmar que a conta está liberada.
+      setTimeout(function(){ carregarPerfil(sessao.user); }, 0);
     }
   });
 

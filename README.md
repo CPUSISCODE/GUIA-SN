@@ -105,9 +105,13 @@ A base fiscal. Migration:
 10.687 registros, dos quais 2.052 com segmento e MVA, e 550 monofásicos. Índices parciais
 em `segmento` e `monofasico`.
 
-RLS habilitado, com uma única policy: `select` liberado para a role `authenticated`
-(`using (true)`). Não há policy de escrita — atualizar a base é tarefa do `service_role`,
-fora do navegador. Ver [`supabase/seed/README.md`](supabase/seed/README.md).
+RLS habilitado, com uma única policy de `select` para a role `authenticated`, condicionada
+a `private.usuario_liberado()` — ou seja, **estar autenticado não basta: a conta precisa
+estar aprovada e não bloqueada**. Sem isso o RLS devolve lista vazia e a ferramenta não tem
+o que consultar. Ver [Administração](#administração).
+
+Não há policy de escrita — atualizar a base é tarefa do `service_role`, fora do navegador.
+Ver [`supabase/seed/README.md`](supabase/seed/README.md).
 
 ### Tabela `public.ncm_versao`
 
@@ -135,6 +139,92 @@ a um cache velho.
 O cache ocupa cerca de 1,3 MB, bem dentro do limite dos navegadores. Se a gravação
 falhar (cota estourada, storage bloqueado), a ferramenta funciona igual naquela sessão e
 apenas ressincroniza no acesso seguinte.
+
+### Administração
+
+Migrations `20260806133536`, `20260806133610`, `20260806133659`, `20260806133806` e
+`20260806134132`.
+
+#### `public.admins`
+
+Uma linha por administrador (`id`, `criado_em`, `criado_por`).
+
+**A condição de admin não fica em `profiles` de propósito.** Os usuários têm policy de
+`update` no próprio perfil, então uma coluna `admin` ali seria auto-atribuível — qualquer
+um viraria admin sozinho. A tabela `admins` não tem nenhuma policy de escrita para o
+cliente: entrar e sair dela só acontece pelas funções `promover_admin` e `rebaixar_admin`.
+
+#### Campos de controle em `public.profiles`
+
+| Coluna | Padrão | Para que serve |
+| --- | --- | --- |
+| `aprovado` | `false` | Sem isso o usuário entra, mas **não recebe a base fiscal** |
+| `bloqueado` | `false` | Bloqueio manual, independente da aprovação |
+| `limite_dispositivos` | `2` | Quantos aparelhos distintos ele pode registrar (1 a 20) |
+| `observacao` | `null` | Anotação livre do admin |
+
+Esses quatro campos são protegidos pelo trigger `profiles_proteger_controle`: se quem
+está atualizando não for admin, a alteração é recusada. O usuário continua podendo editar
+o próprio nome e empresa normalmente.
+
+#### `public.dispositivos` e `public.acessos`
+
+`dispositivos` guarda um registro por aparelho (`impressao`, `tipo`, `navegador`,
+`sistema`, `fuso`, `primeiro_acesso`, `ultimo_acesso`), com `unique (user_id, impressao)`.
+`acessos` guarda um registro por entrada na ferramenta.
+
+A `impressao` é um identificador aleatório gerado e guardado **naquele navegador** — não é
+fingerprinting, e some se o usuário limpar os dados do site.
+
+**O limite de dispositivos é aplicado no banco**, pelo trigger `dispositivos_limite`, e
+não no navegador: não há como contornar registrando um aparelho a mais pelo devtools. O
+trigger ignora aparelhos já conhecidos, senão reconectar do computador de sempre seria
+barrado (o `BEFORE INSERT` dispara antes de o Postgres avaliar o `ON CONFLICT`).
+
+#### Sobre a "região"
+
+O navegador não sabe a localização de forma confiável, e não há servidor próprio aqui para
+ler o IP. O que dá para captar sem inventar é o **fuso horário do navegador**
+(`America/Rio_Branco`, `America/Sao_Paulo`…), que serve de aproximação regional. Como vem
+do cliente, é falsificável: vale como visibilidade operacional, **não como prova**.
+
+Região por IP de verdade exigiria uma Edge Function lendo o endereço de origem — não está
+implementado. Vale lembrar que guardar IP e localização de usuário identificado é dado
+pessoal sob a **LGPD** e precisa estar declarado para o usuário.
+
+#### Funções expostas ao painel
+
+| Função | O que faz |
+| --- | --- |
+| `listar_usuarios()` | A planilha do painel. Junta `auth.users` (e-mail, último login, confirmação) com o perfil e os totais de dispositivos e acessos |
+| `promover_admin(p_email)` | Torna alguém admin pelo e-mail. Já deixa a conta aprovada e desbloqueada |
+| `rebaixar_admin(p_id)` | Remove um admin. **Recusa remover o último**, para não deixar o sistema sem ninguém |
+
+As três são `security definer` e **precisam** ser chamáveis pela role `authenticated` —
+é assim que o painel funciona. Cada uma checa `private.e_admin()` na primeira linha e
+levanta erro se quem chamou não for admin. O advisor de segurança sinaliza essas três
+funções; é intencional, e a autorização está dentro delas.
+
+Já os auxiliares `private.e_admin()` e `private.usuario_liberado()`, usados dentro das
+policies, ficam no schema **`private`**, que o PostgREST não expõe — assim não viram rota
+em `/rest/v1/rpc/...`.
+
+#### O que o painel faz
+
+Aba **Administração**, visível apenas para admins:
+
+- Planilha com todos os usuários, ordenável por qualquer coluna, com busca por nome,
+  e-mail ou empresa, filtros por situação e exportação em CSV.
+- Cartões de resumo: total, aprovados, aguardando, bloqueados e administradores.
+- Ao clicar num usuário: quando assinou, se confirmou o e-mail, último login, último
+  acesso, total de acessos, dispositivos usados sobre o limite, a lista de aparelhos (com
+  tipo, navegador, sistema e região aproximada) e os últimos 20 acessos.
+- Ações: aprovar/revogar, bloquear/desbloquear, mudar o limite de dispositivos, remover um
+  aparelho para liberar vaga, e **tornar outro usuário administrador**.
+- Aba **API**, documentando os endpoints REST já disponíveis.
+
+Quem não está aprovado vê uma tela explicando que a conta aguarda liberação, em vez de uma
+ferramenta vazia sem motivo aparente.
 
 ### Funções e triggers
 
@@ -290,13 +380,18 @@ O visual reaproveita as variáveis CSS `:root` já existentes (`--ink`, `--paper
 ## Estrutura do repositório
 
 ```
-index.html                       a ferramenta + o controle de acesso + o sincronizador da base
+index.html                       a ferramenta + o controle de acesso + a base + o painel admin
 README.md                        este arquivo
 supabase/
   migrations/
     20260805133803_criar_tabela_profiles_com_rls_e_triggers.sql
     20260806130125_criar_tabela_ncm_e_versao.sql
     20260806130354_versionar_base_ncm_automaticamente.sql
+    20260806133536_criar_admins_e_campos_de_controle.sql
+    20260806133610_criar_dispositivos_e_acessos.sql
+    20260806133659_policies_de_admin_e_funcoes_de_gestao.sql
+    20260806133806_mover_helpers_de_rls_para_schema_privado.sql
+    20260806134132_corrigir_limite_para_dispositivo_ja_conhecido.sql
   seed/
     ncm.json                     cópia versionada dos 10.687 NCMs
     README.md                    formato do arquivo e como recarregar a base
