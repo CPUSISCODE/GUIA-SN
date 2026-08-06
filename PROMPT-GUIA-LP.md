@@ -45,7 +45,7 @@ Duas tabelas, com RLS habilitado e `select` liberado **apenas** para a role
 Crie um trigger `after insert or update or delete or truncate ... for each statement` em
 `public.ncm` que recalcula esse md5 e atualiza `ncm_versao`. Isso é o que garante que a
 versão nunca fique atrasada em relação aos dados — e, portanto, que nenhum navegador fique
-presto a um cache velho. A função deve ser `security definer` com `set search_path = ''` e
+preso a um cache velho. A função deve ser `security definer` com `set search_path = ''` e
 levar `revoke all on function ... from public, anon, authenticated;`, senão o
 `get_advisors` acusa que ela é chamável via `/rest/v1/rpc/...`.
 
