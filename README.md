@@ -7,6 +7,11 @@ operacional, com as regras do RICMS/AC para empresas do Simples Nacional.
 O acesso é controlado por **cadastro e login via Supabase**. Enquanto não houver sessão,
 uma tela de acesso cobre toda a página; a ferramenta só aparece depois da autenticação.
 
+A **base fiscal não fica mais embutida no HTML**: os 10.687 NCMs vivem na tabela
+`public.ncm`, protegida por RLS, e são baixados no primeiro acesso autenticado. A partir
+daí ficam guardados no `localStorage` do navegador, e a ferramenta **volta a funcionar
+sem internet** — a rede só é usada de novo quando a versão publicada da base muda.
+
 ---
 
 ## Sumário
@@ -83,6 +88,53 @@ Não há policy de `delete`: o perfil sai junto com a conta, pelo cascade.
 
 > `(select auth.uid())` em vez de `auth.uid()` puro faz o Postgres avaliar a função uma
 > única vez por consulta (initplan), em vez de uma vez por linha.
+
+### Tabela `public.ncm`
+
+A base fiscal. Migration:
+[`20260806130125_criar_tabela_ncm_e_versao.sql`](supabase/migrations/20260806130125_criar_tabela_ncm_e_versao.sql)
+
+| Coluna | Tipo | Observações |
+| --- | --- | --- |
+| `ncm` | `text` | PK, 8 dígitos (`check (ncm ~ '^[0-9]{8}$')`) |
+| `descricao` | `text` | `not null` |
+| `segmento` | `text` | Segmento de ST do RICMS/AC. `null` = sem ST |
+| `mva` | `numeric(6,2)` | MVA de referência do segmento |
+| `monofasico` | `text` | Categoria monofásica de PIS/COFINS. `null` = não é |
+
+10.687 registros, dos quais 2.052 com segmento e MVA, e 550 monofásicos. Índices parciais
+em `segmento` e `monofasico`.
+
+RLS habilitado, com uma única policy: `select` liberado para a role `authenticated`
+(`using (true)`). Não há policy de escrita — atualizar a base é tarefa do `service_role`,
+fora do navegador. Ver [`supabase/seed/README.md`](supabase/seed/README.md).
+
+### Tabela `public.ncm_versao`
+
+Linha única (`id boolean primary key default true check (id)`) com a versão corrente da
+base: `versao` (md5 do conteúdo), `fonte`, `total` e `atualizado_em`. Também com `select`
+liberado apenas para `authenticated`.
+
+É essa versão que decide se o cache do navegador ainda vale. O trigger
+`ncm_versao_sync` recalcula o md5 a cada escrita em `public.ncm`, então é impossível a
+base mudar e a versão ficar para trás — e, portanto, impossível um navegador ficar preso
+a um cache velho.
+
+### Como a sincronização funciona
+
+1. O usuário entra. Só então a base é buscada (a policy exige `authenticated`).
+2. Se já existe cache no `localStorage` (chave `guia-sn-base-ncm`), ele é aplicado **na
+   hora** — a ferramenta fica utilizável antes mesmo de falar com o servidor.
+3. Em seguida a página lê `ncm_versao`. Versão igual à do cache → nada é baixado.
+   Versão diferente (ou sem cache) → a base é baixada paginada, de 1.000 em 1.000, e
+   regravada no cache.
+4. Sem rede: havendo cache, a ferramenta segue funcionando offline. Sem cache, aparece
+   um aviso pedindo conexão — e a busca informa que a base está carregando em vez de
+   responder "NCM não encontrado".
+
+O cache ocupa cerca de 1,3 MB, bem dentro do limite dos navegadores. Se a gravação
+falhar (cota estourada, storage bloqueado), a ferramenta funciona igual naquela sessão e
+apenas ressincroniza no acesso seguinte.
 
 ### Funções e triggers
 
@@ -238,11 +290,30 @@ O visual reaproveita as variáveis CSS `:root` já existentes (`--ink`, `--paper
 ## Estrutura do repositório
 
 ```
-index.html                       a ferramenta inteira + o controle de acesso
+index.html                       a ferramenta + o controle de acesso + o sincronizador da base
 README.md                        este arquivo
 supabase/
   migrations/
     20260805133803_criar_tabela_profiles_com_rls_e_triggers.sql
+    20260806130125_criar_tabela_ncm_e_versao.sql
+    20260806130354_versionar_base_ncm_automaticamente.sql
+  seed/
+    ncm.json                     cópia versionada dos 10.687 NCMs
+    README.md                    formato do arquivo e como recarregar a base
   templates/
     confirmacao-cadastro.html    e-mail de confirmação (colar no painel)
 ```
+
+## Um aviso sobre o alcance do controle de acesso
+
+O gate protege a **base fiscal**: sem login, `public.ncm` não é legível, então a
+ferramenta não tem o que consultar. Isso é real, e vem do RLS.
+
+O que ele não protege é o **código da página** — `index.html` continua sendo um arquivo
+estático público, com a lógica de cálculo à vista de quem abrir o código-fonte. E, uma
+vez sincronizada, a base fica guardada no `localStorage` daquele navegador, inclusive
+depois do logout: é o preço de funcionar offline. Quem já entrou uma vez leva a base
+consigo.
+
+Em outras palavras: o login controla **quem consegue obter a base**, não o que a pessoa
+faz com ela depois de obtida.
